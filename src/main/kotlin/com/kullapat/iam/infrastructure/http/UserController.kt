@@ -4,20 +4,24 @@ import com.kullapat.iam.usecase.user.CreateUserInput
 import com.kullapat.iam.domain.User
 import com.kullapat.iam.usecase.storage.UserStorage
 import com.kullapat.iam.usecase.user.CreateUser
+import com.kullapat.iam.usecase.user.GetAllUsers
 import kotlinx.coroutines.flow.Flow
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/v1/users")
 class UserController(userStorage: UserStorage) {
 
-    val createUser: CreateUser = CreateUser(userStorage)
+    val createUserCommand: CreateUser = CreateUser(userStorage)
+    val getAllUsersQuery: GetAllUsers = GetAllUsers(userStorage)
 
     @PostMapping
-    fun createUser(@RequestBody input: CreateUserInput): Flow<User> {
-        return createUser.execute(input)
+    suspend fun createUser(@RequestBody input: CreateUserInput): User {
+        return createUserCommand.execute(input)
+    }
+
+    @GetMapping
+    fun getAllUsers(): Flow<User> {
+        return getAllUsersQuery.execute()
     }
 }

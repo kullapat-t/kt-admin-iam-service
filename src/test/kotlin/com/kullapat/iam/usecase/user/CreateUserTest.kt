@@ -1,47 +1,54 @@
 package com.kullapat.iam.usecase.user
 
+import com.kullapat.iam.domain.User
 import com.kullapat.iam.usecase.storage.UserStorage
 import io.kotlintest.shouldBe
 import io.kotlintest.shouldThrow
 import io.kotlintest.specs.BehaviorSpec
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
+import io.mockk.*
+import kotlinx.coroutines.runBlocking
 
 class CreateUserTest: BehaviorSpec({
 
     val userStorage = mockk<UserStorage>()
     val useCase = CreateUser(userStorage)
 
-    given("create a user with invalid input") {
+    given("Create user input") {
+        var input = CreateUserInput(username = "nitch", email = "nitch001@mail.com", firstName = "nitch", enabled = true)
+
+        `when`("create a user") {
+            then("should save and return a user") {
+                runBlocking {
+                    val expectedUser = input.toUser()
+                    val userSlot = slot<User>()
+                    coEvery { userStorage.save(any()) } answers { firstArg() }
+
+                    useCase.execute(input)
+
+                    coVerify(exactly = 1) { userStorage.save(capture(userSlot)) }
+                    userSlot.captured shouldBe expectedUser
+                }
+            }
+        }
+
         `when`("username is empty") {
-            val input = CreateUserInput(username = "", email = "nitch001@mail.com", firstName = "nitch", enabled = true)
+            val input = input.copy(username = "")
             then("should throw invalid input exception") {
-                val exception = shouldThrow<Exception> { useCase.execute(input) }
+                val exception = shouldThrow<Exception> {
+                    runBlocking { useCase.execute(input) }
+                }
                 exception.message shouldBe "username cannot be empty"
             }
         }
 
         `when`("email is empty") {
-            val input = CreateUserInput(username = "nitch001", email = "", firstName = "nitch", enabled = true)
+            val input = input.copy(email = "")
             then("should throw invalid input exception") {
-                val exception = shouldThrow<Exception> { useCase.execute(input) }
+                val exception = shouldThrow<Exception> {
+                    runBlocking { useCase.execute(input) }
+                }
                 exception.message shouldBe "email cannot be empty"
             }
-        }
-    }
-
-    given("create a user") {
-        val input = CreateUserInput(username = "nitch001", email = "nitch001@mail.com", firstName = "nitch", enabled = true)
-        then("should save and return a user") {
-            val expectedUser = input.toUser()
-            every { userStorage.save(expectedUser) } returns flowOf(expectedUser)
-
-            val actual = useCase.execute(input)
-            verify(exactly = 1) { userStorage.save(expectedUser) }
-            actual.toList()[0] shouldBe expectedUser
         }
     }
 })
