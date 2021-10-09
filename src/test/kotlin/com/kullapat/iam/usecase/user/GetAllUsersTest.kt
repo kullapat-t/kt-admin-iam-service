@@ -17,7 +17,7 @@ class GetAllUsersTest {
     val getAllUsersQuery = GetAllUsers(userStorage)
 
     @Nested
-    inner class GivenUsersInPlatform {
+    inner class GivenUsers {
         val jon = UserBuilder(username = "jon").build()
         val tom = UserBuilder(username = "tom").build()
 

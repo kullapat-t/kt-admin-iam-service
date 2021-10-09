@@ -26,6 +26,8 @@ dependencies {
 	// kotlin
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
+	// swagger
+	implementation("org.springdoc:springdoc-openapi-webflux-ui:1.5.11")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")

@@ -1,0 +1,6 @@
+server:
+  port: 9999
+
+springdoc:
+  packagesToScan: com.kullapat.iam
+  pathsToMatch: /api/**
