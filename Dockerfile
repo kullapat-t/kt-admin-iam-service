@@ -1,8 +1,8 @@
 FROM adoptopenjdk/openjdk13-openj9:alpine-slim
-WORKDIR /tmp
+WORKDIR /output
 
 COPY . .
 RUN ./gradlew clean build -x test
+COPY /build/libs/*.jar /service.jar
 
-COPY src ./src
-CMD ["./gradlew", "bootRun"]
+ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /service.jar" ]
