@@ -4,3 +4,9 @@ server:
 springdoc:
   packagesToScan: com.kullapat.iam
   pathsToMatch: /api/**
+
+spring:
+  data:
+    mongodb:
+      database: ${mongo_database:kt-iam}
+      uri: ${mongo_uri:mongodb://localhost:27017}
